@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<project name="PR1">
+
+    <!-- This is only an idea for your script, you can build your own! -->
+    <description>
+        TK1 - Programmieraufgabe 1
+        Group Members:
+        * Tran Kieu Dai -2392444
+        * Hoang Minh Duc -1346145
+        * Nguyen Tien Truong -1829882
+    </description>
+
+
+    <property name="src.dir" location="src"/>
+    <property name="build.dir" location="bin"/>
+    <property name="dist.dir" location="dist"/>
+    <property name="docs.dir" location="docs"/>
+    <property name="resource.dir" location="resource"/>
+    <property name="lib.dir" location="lib"/>
+
+    <!-- Creates the  build, docs and dist directory-->
+    <target name="makedir">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${docs.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${docs.dir}"/>
+        <delete dir="${dist.dir}"/>
+
+    </target>
+    <path id="project.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Compiles the java code (including the usage of library  -->
+    <target name="compile" depends="clean,makedir">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="project.classpath"/>
+
+
+    </target>
+
+    <!-- Creates Javadoc
+    <target name="docs" depends="compile">
+        <javadoc packagenames="src" sourcepath="${src.dir}" destdir="${docs.dir}">
+             Define which files / directory should get included, we include all
+            <fileset dir="${src.dir}">
+                <include name="**" />
+            </fileset>
+        </javadoc>
+    </target> -->
+
+    <target name="copy">
+        <copy todir="${dist.dir}">
+            <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        </copy>
+    </target>
+
+
+    <!--Creates the deployable jar file  -->
+    <target name="jar" depends="compile">
+
+
+        <jar destfile="${dist.dir}\Client.jar" basedir="${build.dir}">
+
+            <fileset dir="${resource.dir}">
+                <include name="fliege.jpg"/>
+            </fileset>
+
+            <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+
+
+            <manifest>
+
+                <attribute name="Main-Class" value="Controller.ClientController"/>
+
+            </manifest>
+        </jar>
+
+    </target>
+
+
+    <target name="run" depends="jar">
+
+        <!-- start here one server and two clients -->
+        <parallel>
+            <java jar="${dist.dir}\Client.jar" fork="true">
+
+            </java>
+            <java jar="${dist.dir}\Client.jar" fork="true">
+
+            </java>
+        </parallel>
+
+
+    </target>
+
+    <target name="main" depends="compile,jar,run">
+        <description>Main target</description>
+    </target>
+
+</project>
